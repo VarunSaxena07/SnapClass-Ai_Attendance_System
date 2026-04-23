@@ -8,7 +8,7 @@ import pandas as pd
 
 @st.dialog("Voice Attendance")
 
-def Voice_attendance_dialog(subject_id):
+def Voice_attendance_dialog(selected_subject_id):
     st.write("Record a short audio to mark attendance using voice recognition.")
     audio_data=None
     audio_data=st.audio_input("Record classroom Audio")
