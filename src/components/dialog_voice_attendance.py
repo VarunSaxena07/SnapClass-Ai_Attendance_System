@@ -48,7 +48,7 @@ def Voice_attendance_dialog(selected_subject_id):
 
                 attendance_to_log.append({
                     'student_id':student['student_id'],
-                    'subject_id':seleted_subject_id,
+                    'subject_id':selected_subject_id,
                     'timestamps':current_timestamps,
                     "is_present":bool(is_present)
                 })
