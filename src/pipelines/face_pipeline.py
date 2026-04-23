@@ -87,7 +87,8 @@ def predict_attendance(class_image_np):
         else:
             predicted_id=int(all_students[0])
 
-        student_embeddings=X_train[y_train.index[predicted_id]]
+        student_index=y_train.index(predicted_id)
+        student_embeddings=X_train[student_index]
 
         best_match_score=np.linalg.norm(student_embeddings-encoding)
 
@@ -95,4 +96,4 @@ def predict_attendance(class_image_np):
 
         if best_match_score <= resembalance_threshold:
             detected_students[predicted_id]=True
-    return detected_students,all_students,len(encoding)
+    return detected_students,all_students,len(encodings)

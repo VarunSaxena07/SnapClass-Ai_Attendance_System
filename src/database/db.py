@@ -1,6 +1,7 @@
 from src.database.config import supabase
 
 import bcrypt
+from postgrest.exceptions import APIError
 
 
 def hash_pass(pwd):
@@ -34,4 +35,94 @@ def teacher_login(username,password):
 
 def get_all_students():
     response=supabase.table("students").select("*").execute()
+    return response.data
+
+def create_student(new_name,face_embedding=None,voice_embedding=None):
+    data={'name':new_name,'face_embeddings':face_embedding,'voice_embeddings':voice_embedding}
+
+    response=supabase.table('students').insert(data).execute()
+    return response.data
+
+def create_subject(subject_code,name,section,teacher_id):
+    data={
+        "subject_code":subject_code,
+        "name":name,
+        "section":section,
+        "teacher_id":teacher_id
+    }
+
+    response=supabase.table("subjects").insert(data).execute()
+
+    return response.data
+
+
+
+def get_teacher_subjects(teacher_id):
+    attendance_keys=("timestamp","timestaps","timestamps")
+    response=None
+    last_error=None
+
+    for attendance_key in attendance_keys:
+        select_query=f"*,subject_students(count),attendance_logs({attendance_key})"
+        try:
+            response=supabase.table("subjects").select(select_query).eq("teacher_id",teacher_id).execute()
+            break
+        except APIError as exc:
+            last_error=exc
+            if f"attendance_logs_1.{attendance_key}" not in str(exc):
+                raise
+
+    if response is None:
+        raise last_error
+
+    subjects=response.data or []
+    for sub in subjects:
+        students=sub.get("subject_students") or []
+        attendance=sub.get("attendance_logs") or []
+
+        sub['total_students']=students[0].get('count',0) if students else 0
+        unique_session=len({
+            next((log.get(key) for key in attendance_keys if log.get(key)),None)
+            for log in attendance
+            if any(log.get(key) for key in attendance_keys)
+        })
+
+        sub['total_classes']=unique_session
+
+        sub.pop("subject_students",None)
+        sub.pop("attendance_logs",None)
+
+    return subjects
+
+
+def enroll_student_to_subject(student_id,subject_id):
+    data={
+        'student_id':student_id,
+        'subject_id':subject_id
+    }
+    response=supabase.table('subject_students').insert(data).execute()
+    return response.data
+
+def unenroll_student_to_subject(student_id,subject_id):
+    response=supabase.table('subject_students').delete().eq('student_id',student_id).eq('subject_id',subject_id).execute()
+    return response.data
+
+
+
+
+def get_student_subjects(student_id):
+    res=supabase.table('subject_students').select("*,subjects(*)").eq('student_id',student_id).execute()
+    return res.data
+
+def get_student_attendance(student_id):
+    res=supabase.table('attendance_logs').select("*,subjects(*)").eq('student_id',student_id).execute()
+    return res.data
+
+
+def create_attendance(logs):
+    response=supabase.table('attendance_logs').insert(logs).execute()  
+    return response.data
+
+def get_attendance_for_teacher(teacher_id):
+    response=supabase.table('attendance_logs').select("*,subjects!inner(*)").eq('subjects.teacher_id',teacher_id).execute()
     return response.data
