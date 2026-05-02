@@ -2,10 +2,6 @@
 
 SnapClass is a Streamlit-based attendance system for classrooms. It gives teachers a dashboard to create subjects, share enrollment links, and mark attendance from classroom photos or voice recordings. Students can register with Face ID, optionally enroll a voice sample, join subjects with a code or QR link, and track their attendance.
 
-<p align="center">
-  <img src="logo.jpg" alt="SnapClass logo" width="140" />
-</p>
-
 ## Features
 
 ### Teacher portal
