@@ -1,4 +1,4 @@
-# SnapClass - AI Attendance System
+# SnapClass - AI Attendance System [Live Demo](https://snap-class-landing-page-alpha.vercel.app/)
 
 SnapClass is a Streamlit-based attendance system for classrooms. It gives teachers a dashboard to create subjects, share enrollment links, and mark attendance from classroom photos or voice recordings. Students can register with Face ID, optionally enroll a voice sample, join subjects with a code or QR link, and track their attendance.
 
