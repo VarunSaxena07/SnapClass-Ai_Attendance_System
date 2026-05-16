@@ -14,13 +14,13 @@ def Voice_attendance_dialog(selected_subject_id):
     audio_data=st.audio_input("Record classroom Audio")
     if st.button("Analyze Audio",type='primary',width='stretch'):
         with st.spinner("Processing Audio..."):
-            enrolled_res=supabase.table('subjects_students').select("*,students(*)").eq("subject_id",selected_subject_id).execute()
+            enrolled_res=supabase.table('subject_students').select("*,students(*)").eq("subject_id",selected_subject_id).execute()
             enrolled_students=enrolled_res.data
             if not enrolled_students:
                 st.warning("No student has enrolled this course")
                 return
             candidates_dict={
-                s['students']['id']:s['students']['voice_embeddings'] for s in enrolled_students if s['students'].get['voice_embeddings']
+                s['students']['student_id']:s['students']['voice_embeddings'] for s in enrolled_students if s['students'].get('voice_embeddings')
             }
 
             if not candidates_dict:
